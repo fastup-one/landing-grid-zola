@@ -1,0 +1,34 @@
+base_url = "http://localhost:1111"
+title = "Modern Landing Grid"
+description = "A beautiful, responsive landing page with your favorite tools and websites"
+
+theme = "landing-grid"
+
+[extra]
+favicon = "favicon.ico"
+open_links_in_new_window = true
+
+[[extra.nav]]
+name = "favorites"
+tag = "favorite"
+icon = "star"
+
+[[extra.nav]]
+name = "search"
+tag = "search"
+icon = "search"
+
+[[extra.nav]]
+name = "shopping"
+tag = "shopping"
+icon = "shopping-bag"
+
+[[extra.nav]]
+name = "music"
+tag = "music"
+icon = "music"
+
+[[extra.nav]]
+name = "video"
+tag = "video"
+icon = "play"

@@ -1,0 +1,78 @@
+[[tiles]]
+name = "Google"
+url = "https://google.com"
+bg_color = "#4285F4"
+txt_color = "#FFFFFF"
+tags = ["favorite", "search"]
+
+[[tiles]]
+name = "YouTube"
+url = "https://youtube.com"
+bg_color = "#FF0000"
+txt_color = "#FFFFFF"
+tags = ["favorite", "video"]
+
+[[tiles]]
+name = "GitHub"
+url = "https://github.com"
+bg_color = "#24292E"
+txt_color = "#FFFFFF"
+tags = ["favorite"]
+
+[[tiles]]
+name = "Amazon"
+url = "https://amazon.com"
+bg_color = "#FF9900"
+txt_color = "#000000"
+tags = ["shopping"]
+
+[[tiles]]
+name = "Spotify"
+url = "https://spotify.com"
+bg_color = "#1DB954"
+txt_color = "#FFFFFF"
+tags = ["music"]
+
+[[tiles]]
+name = "Netflix"
+url = "https://netflix.com"
+bg_color = "#E50914"
+txt_color = "#FFFFFF"
+tags = ["video"]
+
+[[tiles]]
+name = "Twitter"
+url = "https://twitter.com"
+bg_color = "#1DA1F2"
+txt_color = "#FFFFFF"
+
+[[tiles]]
+name = "Instagram"
+url = "https://instagram.com"
+bg_color = "#E4405F"
+txt_color = "#FFFFFF"
+
+[[tiles]]
+name = "LinkedIn"
+url = "https://linkedin.com"
+bg_color = "#0077B5"
+txt_color = "#FFFFFF"
+
+[[tiles]]
+name = "Discord"
+url = "https://discord.com"
+bg_color = "#5865F2"
+txt_color = "#FFFFFF"
+
+[[tiles]]
+name = "Reddit"
+url = "https://reddit.com"
+bg_color = "#FF4500"
+txt_color = "#FFFFFF"
+
+[[tiles]]
+name = "Twitch"
+url = "https://twitch.tv"
+bg_color = "#9146FF"
+txt_color = "#FFFFFF"
+tags = ["video"]

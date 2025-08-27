@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ config.title }}</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            'inter': ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+    </script>
+    
+    <style>
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes scaleIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    .animate-fade-in { animation: fadeIn 0.6s ease-out; }
+    .animate-scale-in { animation: scaleIn 0.4s ease-out; }
+    .animate-float { animation: float 3s ease-in-out infinite; }
+    
+    .glass {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .glass-dark {
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .tile-hover {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .tile-hover:hover {
+      transform: translateY(-8px) scale(1.05);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+    </style>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 font-inter overflow-x-hidden">
+    <!-- Animated background elements -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute -top-40 -right-40 w-80 h-80 bg-white opacity-5 rounded-full animate-float"></div>
+        <div class="absolute top-1/2 -left-20 w-60 h-60 bg-white opacity-3 rounded-full animate-float" style="animation-delay: 1s;"></div>
+        <div class="absolute bottom-20 right-20 w-40 h-40 bg-white opacity-10 rounded-full animate-float" style="animation-delay: 2s;"></div>
+    </div>
+
+    <!-- Clean Professional Navigation -->
+    <nav class="fixed left-0 top-0 h-full w-16 z-50 glass-dark border-r border-white/10">
+        <div class="h-full flex flex-col items-center py-6">
+            <!-- Logo -->
+            <div class="mb-8 p-3 rounded-xl bg-white/10 hover:bg-white/15 transition-all duration-200 cursor-pointer">
+                <i class="fas fa-home text-white text-xl"></i>
+            </div>
+            
+            <!-- Nav Items -->
+            <ul class="flex-1 flex flex-col items-center space-y-2">
+                <li>
+                    <a href="#" class="nav-item active" data-filter="all" title="All Apps">
+                        <i class="fas fa-th text-lg"></i>
+                        <div class="nav-indicator"></div>
+                    </a>
+                </li>
+                {% for nav_item in config.extra.nav %}
+                <li>
+                    <a href="#{{ nav_item.tag }}" class="nav-item" data-filter="{{ nav_item.tag }}" title="{{ nav_item.name | title }}">
+                        <i class="fas fa-{{ nav_item.icon }} text-lg"></i>
+                        <div class="nav-indicator"></div>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+            
+            <!-- App Counter -->
+            <div class="mt-4 text-center">
+                <div id="nav-counter" class="text-xs text-white/50 font-medium"></div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <main class="ml-16 min-h-screen">
+        <div class="container mx-auto px-6 py-16">
+            <!-- Hero -->
+            <div class="text-center mb-16 animate-fade-in">
+                <h1 class="text-5xl lg:text-7xl font-bold text-white mb-6">
+                    <span class="bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                        Welcome Home
+                    </span>
+                </h1>
+                <p class="text-xl text-gray-200 max-w-2xl mx-auto">
+                    Your personal dashboard to access all your favorite websites and tools
+                </p>
+            </div>
+            
+            <!-- Search -->
+            <div class="max-w-2xl mx-auto mb-12 animate-fade-in" style="animation-delay: 0.2s;">
+                <div class="relative">
+                    <input type="text" 
+                           id="search-input" 
+                           placeholder="Search your apps and tools..."
+                           class="w-full px-6 py-4 pl-14 glass rounded-2xl text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-white/30 transition-all duration-300">
+                    <div class="absolute left-5 top-1/2 transform -translate-y-1/2">
+                        <i class="fas fa-search text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Grid -->
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <style>
+    /* Clean Professional Navigation */
+    .nav-item {
+        @apply relative flex items-center justify-center w-12 h-12 rounded-xl text-white/60 hover:text-white hover:bg-white/10 transition-all duration-200;
+    }
+    
+    .nav-item.active {
+        @apply text-white bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg;
+    }
+    
+    .nav-indicator {
+        @apply absolute -right-2 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-indigo-400 to-purple-500 rounded-full opacity-0 transition-all duration-300;
+    }
+    
+    .nav-item.active .nav-indicator {
+        @apply opacity-100;
+    }
+    
+    /* Smooth fade transitions for tiles */
+    .tile {
+        transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                    transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                    filter 0.4s ease;
+    }
+    
+    .tile.fade-out {
+        opacity: 0;
+        transform: scale(0.95);
+        filter: blur(2px);
+    }
+    
+    .tile.fade-in {
+        opacity: 1;
+        transform: scale(1);
+        filter: blur(0px);
+    }
+    </style>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const navItems = document.querySelectorAll('.nav-item');
+        const tiles = document.querySelectorAll('.tile');
+        const searchInput = document.getElementById('search-input');
+        const navCounter = document.getElementById('nav-counter');
+        
+        // Convert tile icons to show first letter only
+        document.querySelectorAll('.tile-icon').forEach(icon => {
+            const name = icon.getAttribute('data-name');
+            if (name) {
+                icon.textContent = name.charAt(0).toUpperCase();
+            }
+        });
+        
+        // Stagger tile animations on initial load
+        tiles.forEach((tile, index) => {
+            tile.style.animationDelay = `${index * 0.1}s`;
+            tile.classList.add('animate-scale-in');
+        });
+        
+        // Update counter
+        function updateCounter(filter, visibleCount) {
+            if (navCounter) {
+                const totalCount = tiles.length;
+                if (filter === 'all') {
+                    navCounter.textContent = `${totalCount} apps`;
+                } else {
+                    navCounter.textContent = `${visibleCount}/${totalCount}`;
+                }
+            }
+        }
+        
+        // Enhanced filtering with smooth transitions
+        function filterTiles(filter) {
+            let visibleCount = 0;
+            const filterName = filter === 'all' ? 'All Apps' : 
+                               document.querySelector(`[data-filter="${filter}"]`)?.title || filter;
+            
+            // Phase 1: Fade out all tiles
+            tiles.forEach(tile => {
+                tile.classList.add('fade-out');
+                tile.classList.remove('fade-in');
+            });
+            
+            // Phase 2: After fade out, determine visibility and fade in relevant tiles
+            setTimeout(() => {
+                tiles.forEach((tile, index) => {
+                    const groups = tile.getAttribute('data-groups') || '';
+                    const shouldShow = filter === 'all' || groups.includes(filter);
+                    
+                    if (shouldShow) {
+                        visibleCount++;
+                        tile.style.display = 'block';
+                        
+                        // Staggered fade in
+                        setTimeout(() => {
+                            tile.classList.remove('fade-out');
+                            tile.classList.add('fade-in');
+                        }, index * 50);
+                    } else {
+                        tile.style.display = 'none';
+                    }
+                });
+                
+                updateCounter(filter, visibleCount);
+                
+                // Show empty state if no tiles visible
+                checkEmptyState();
+            }, 200);
+        }
+        
+        // Enhanced search with smooth transitions
+        function searchTiles(query) {
+            let visibleCount = 0;
+            
+            tiles.forEach(tile => {
+                tile.classList.add('fade-out');
+                tile.classList.remove('fade-in');
+            });
+            
+            setTimeout(() => {
+                tiles.forEach((tile, index) => {
+                    const title = tile.querySelector('.tile-title').textContent.toLowerCase();
+                    const shouldShow = title.includes(query.toLowerCase());
+                    
+                    if (shouldShow) {
+                        visibleCount++;
+                        tile.style.display = 'block';
+                        
+                        setTimeout(() => {
+                            tile.classList.remove('fade-out');
+                            tile.classList.add('fade-in');
+                        }, index * 30);
+                    } else {
+                        tile.style.display = 'none';
+                    }
+                });
+                
+                if (query) {
+                    navCounter.textContent = `${visibleCount} found`;
+                } else {
+                    updateCounter('all', tiles.length);
+                }
+                
+                checkEmptyState();
+            }, 150);
+        }
+        
+        // Check for empty state
+        function checkEmptyState() {
+            const visibleTiles = document.querySelectorAll('.tile:not([style*="display: none"])');
+            const emptyState = document.getElementById('empty-state');
+            
+            if (emptyState) {
+                if (visibleTiles.length === 0) {
+                    emptyState.classList.remove('hidden');
+                } else {
+                    emptyState.classList.add('hidden');
+                }
+            }
+        }
+        
+        // Navigation click handlers
+        navItems.forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Clear search when filtering
+                if (searchInput) {
+                    searchInput.value = '';
+                }
+                
+                // Update active state
+                navItems.forEach(nav => nav.classList.remove('active'));
+                this.classList.add('active');
+                
+                const filter = this.getAttribute('data-filter');
+                filterTiles(filter);
+                
+                // Update URL hash
+                if (filter !== 'all') {
+                    window.history.replaceState({}, '', '#' + filter);
+                } else {
+                    window.history.replaceState({}, '', '/');
+                }
+            });
+        });
+        
+        // Search functionality
+        let searchTimeout;
+        if (searchInput) {
+            searchInput.addEventListener('input', function(e) {
+                const query = e.target.value;
+                
+                // Clear active nav state when searching
+                if (query) {
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                }
+                
+                // Debounce search for better performance
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    searchTiles(query);
+                }, 200);
+            });
+        }
+        
+        // Initialize counter
+        updateCounter('all', tiles.length);
+        
+        // Handle initial URL hash
+        if (window.location.hash) {
+            const hash = window.location.hash.substring(1);
+            const navItem = document.querySelector(`[data-filter="${hash}"]`);
+            if (navItem) {
+                setTimeout(() => {
+                    navItem.click();
+                }, 500);
+            }
+        }
+        
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // ESC to clear search and show all
+            if (e.key === 'Escape') {
+                if (searchInput) {
+                    searchInput.value = '';
+                    searchInput.blur();
+                }
+                document.querySelector('[data-filter="all"]').click();
+            }
+            
+            // Number keys for quick navigation
+            const numKey = parseInt(e.key);
+            if (numKey >= 1 && numKey <= navItems.length && !e.ctrlKey && !e.metaKey) {
+                navItems[numKey - 1].click();
+            }
+        });
+    });
+    </script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+{
+  "name": "landing-grid-zola-theme",
+  "version": "1.0.0",
+  "description": "Professional landing grid theme for Zola with Tailwind CSS",
+  "keywords": ["zola", "theme", "landing-page", "grid", "dashboard", "tailwind", "responsive"],
+  "homepage": "https://github.com/fastup-one/landing-grid-zola",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fastup-one/landing-grid-zola"
+  },
+  "scripts": {
+    "build-css": "tailwindcss -i ./src/input.css -o ./themes/landing-grid/static/css/tailwind.css --watch",
+    "build-css-prod": "tailwindcss -i ./src/input.css -o ./themes/landing-grid/static/css/tailwind.css --minify",
+    "dev": "concurrently \"npm run build-css\" \"zola serve --port 1111\"",
+    "build": "npm run build-css-prod && zola build",
+    "clean": "rm -rf public themes/landing-grid/static/css/tailwind.css",
+    "theme-build": "npm run build-css-prod"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.0",
+    "@tailwindcss/forms": "^0.5.7",
+    "@tailwindcss/typography": "^0.5.10",
+    "concurrently": "^8.2.2"
+  }
+}
