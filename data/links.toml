@@ -1,7 +1,7 @@
 [[tiles]]
 name = "Perplexity"
-url = "https://www.perplexity.ai"
-bg_color = "#1DA1F2"
+url = "https://perplexity.ai"
+bg_color = "#1debf2ff"
 txt_color = "#FFFFFF"
 tags = ["favorite", "search"]
 
