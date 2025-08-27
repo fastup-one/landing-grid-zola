@@ -1,0 +1,117 @@
+# Landing Grid Zola Theme - Docker Compose Configuration
+# For easy development and production deployment
+
+version: '3.8'
+
+services:
+  # Production deployment
+  landing-grid:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: landing-grid-zola
+    ports:
+      - "80:80"
+    restart: unless-stopped
+    environment:
+      - NGINX_ENTRYPOINT_QUIET_LOGS=1
+    volumes:
+      # Optional: Override nginx config
+      # - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      # Optional: Mount custom content
+      # - ./data:/app/data:ro
+    networks:
+      - landing-grid-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.landing-grid.rule=Host(`your-domain.com`)"
+      - "traefik.http.routers.landing-grid.tls=true"
+      - "traefik.http.routers.landing-grid.tls.certresolver=letsencrypt"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Development service with hot-reload
+  landing-grid-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      target: development
+    container_name: landing-grid-dev
+    ports:
+      - "1111:1111"  # Zola dev server
+      - "3000:3000"  # Optional: For CSS build watching
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/public
+    environment:
+      - NODE_ENV=development
+      - ZOLA_PORT=1111
+    command: npm run dev
+    networks:
+      - landing-grid-network
+    profiles:
+      - dev
+
+  # Optional: Traefik reverse proxy for production
+  traefik:
+    image: traefik:v2.10
+    container_name: traefik
+    command:
+      - "--api.dashboard=true"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.email=your-email@example.com"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"  # Traefik dashboard
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik-letsencrypt:/letsencrypt
+    networks:
+      - landing-grid-network
+    profiles:
+      - traefik
+    restart: unless-stopped
+
+  # Optional: Monitoring with simple health check
+  healthcheck:
+    image: alpine:latest
+    container_name: landing-grid-healthcheck
+    command: |
+      sh -c "
+        while true; do
+          if wget -q --spider http://landing-grid/; then
+            echo '✅ Landing Grid is healthy'
+          else
+            echo '❌ Landing Grid is down'
+          fi
+          sleep 30
+        done
+      "
+    depends_on:
+      - landing-grid
+    networks:
+      - landing-grid-network
+    profiles:
+      - monitoring
+    restart: unless-stopped
+
+networks:
+  landing-grid-network:
+    driver: bridge
+    name: landing-grid-network
+
+volumes:
+  traefik-letsencrypt:
+    name: traefik-letsencrypt

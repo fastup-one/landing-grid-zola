@@ -447,6 +447,138 @@ Originally inspired by and migrated from the Hugo Slate theme. This Zola version
 - 👀 **Watch releases** for new versions
 - 🐦 **Follow on Twitter** [@fastup-one] for announcements
 
+## 🐳 Docker Deployment
+
+The Landing Grid theme comes with full Docker support for easy deployment and development.
+
+### 🚀 **Quick Deployment**
+
+Deploy with a single command:
+
+```bash
+# Production deployment on port 80
+docker-compose up -d landing-grid
+
+# Or build and run directly
+docker build -t landing-grid-zola .
+docker run -d -p 80:80 --name landing-grid landing-grid-zola
+```
+
+### 🔧 **Development with Docker**
+
+Run development environment with hot-reload:
+
+```bash
+# Start development server on port 1111
+docker-compose --profile dev up landing-grid-dev
+
+# Or use the development Dockerfile directly
+docker build -f Dockerfile.dev -t landing-grid-dev .
+docker run -p 1111:1111 -v $(pwd):/app landing-grid-dev
+```
+
+### 📋 **Docker Compose Profiles**
+
+The `docker-compose.yaml` includes multiple profiles:
+
+```bash
+# Production (default)
+docker-compose up -d
+
+# Development with hot-reload
+docker-compose --profile dev up
+
+# With Traefik reverse proxy
+docker-compose --profile traefik up -d
+
+# With health monitoring
+docker-compose --profile monitoring up -d
+
+# All services
+docker-compose --profile dev --profile traefik --profile monitoring up -d
+```
+
+### ⚙️ **Configuration**
+
+#### Environment Variables
+
+```bash
+# Production
+NGINX_ENTRYPOINT_QUIET_LOGS=1
+
+# Development  
+NODE_ENV=development
+ZOLA_PORT=1111
+```
+
+#### Custom Domain with Traefik
+
+Update `docker-compose.yaml`:
+
+```yaml
+labels:
+  - "traefik.http.routers.landing-grid.rule=Host(`your-domain.com`)"
+  - "traefik.http.routers.landing-grid.tls.certresolver=letsencrypt"
+```
+
+#### Volume Mounts
+
+```yaml
+volumes:
+  # Override nginx config
+  - ./custom-nginx.conf:/etc/nginx/conf.d/default.conf:ro
+  # Custom data directory
+  - ./custom-data:/app/data:ro
+```
+
+### 🔒 **Security Features**
+
+The Docker setup includes:
+
+- **Gzip compression** for faster loading
+- **Security headers** (XSS, CSRF, Content-Type protection)
+- **Content Security Policy** configured for theme assets
+- **Health checks** for container monitoring
+- **Non-root user** in production image
+- **Minimal Alpine Linux** base for security
+
+### 📊 **Production Optimization**
+
+- **Multi-stage build** - Smaller final image
+- **Static asset caching** - 1 year cache for assets
+- **Nginx optimization** - Performance tuned configuration
+- **Health monitoring** - Built-in health checks
+- **Graceful shutdown** - Proper signal handling
+
+### 🚀 **Deployment Examples**
+
+#### **Simple Production**
+```bash
+git clone https://github.com/fastup-one/landing-grid-zola
+cd landing-grid-zola
+docker-compose up -d
+```
+
+#### **With Custom Domain**
+```bash
+# Update docker-compose.yaml with your domain
+# Then deploy
+docker-compose --profile traefik up -d
+```
+
+#### **Development**
+```bash
+# Clone and develop
+git clone https://github.com/fastup-one/landing-grid-zola
+cd landing-grid-zola
+docker-compose --profile dev up
+```
+
+Access your site at:
+- **Production**: `http://localhost` or your domain
+- **Development**: `http://localhost:1111`
+- **Traefik Dashboard**: `http://localhost:8080` (if using traefik profile)
+
 ---
 
 <div align="center">

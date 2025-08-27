@@ -1,0 +1,96 @@
+# Docker ignore file for Landing Grid Zola Theme
+# Exclude files that don't need to be in the Docker build context
+
+# Git
+.git
+.gitignore
+
+# Dependencies
+node_modules/
+
+# Build outputs (will be generated in container)
+public/
+
+# Development files
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory
+coverage/
+.nyc_output
+
+# Optional npm cache
+.npm
+
+# Optional ESLint cache
+.eslintcache
+
+# Documentation (keep README.md)
+docs/
+*.md
+!README.md
+
+# Temporary files
+tmp/
+temp/
+.tmp/
+
+# Archive files
+*.zip
+*.tar.gz
+*.rar
+
+# Backup files
+*.bak
+*.backup
+
+# Local development
+docker-compose.override.yml
+docker-compose.local.yml
+
+# Generated CSS (will be built in container)
+themes/landing-grid/static/css/tailwind.css
+
+# Images and captures (unless needed for theme)
+images-captures/
+screenshots/
+
+# Package manager files
+package-lock.json
+yarn.lock
+
+# Build tools cache
+.cache/
+.parcel-cache/
