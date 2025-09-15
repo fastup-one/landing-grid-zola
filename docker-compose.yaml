@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   nginx:
-    image: nginx:alpine
+    image: docker.io/nginx:alpine
     container_name: landing-grid-nginx
     ports:
       - "8090:80"
