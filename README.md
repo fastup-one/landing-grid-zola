@@ -449,135 +449,115 @@ Originally inspired by and migrated from the Hugo Slate theme. This Zola version
 
 ## 🐳 Docker Deployment
 
-The Landing Grid theme comes with full Docker support for easy deployment and development.
+The Landing Grid theme provides simple Docker deployment using pre-built static files and nginx.
 
 ### 🚀 **Quick Deployment**
 
-Deploy with a single command:
+Deploy in just 2 steps:
 
 ```bash
-# Production deployment on port 80
-docker-compose up -d landing-grid
+# 1. Build the static site locally
+zola build
 
-# Or build and run directly
-docker build -t landing-grid-zola .
-docker run -d -p 80:80 --name landing-grid landing-grid-zola
-```
-
-### 🔧 **Development with Docker**
-
-Run development environment with hot-reload:
-
-```bash
-# Start development server on port 1111
-docker-compose --profile dev up landing-grid-dev
-
-# Or use the development Dockerfile directly
-docker build -f Dockerfile.dev -t landing-grid-dev .
-docker run -p 1111:1111 -v $(pwd):/app landing-grid-dev
-```
-
-### 📋 **Docker Compose Profiles**
-
-The `docker-compose.yaml` includes multiple profiles:
-
-```bash
-# Production (default)
-docker-compose up -d
-
-# Development with hot-reload
-docker-compose --profile dev up
-
-# With Traefik reverse proxy
-docker-compose --profile traefik up -d
-
-# With health monitoring
-docker-compose --profile monitoring up -d
-
-# All services
-docker-compose --profile dev --profile traefik --profile monitoring up -d
-```
-
-### ⚙️ **Configuration**
-
-#### Environment Variables
-
-```bash
-# Production
-NGINX_ENTRYPOINT_QUIET_LOGS=1
-
-# Development  
-NODE_ENV=development
-ZOLA_PORT=1111
-```
-
-#### Custom Domain with Traefik
-
-Update `docker-compose.yaml`:
-
-```yaml
-labels:
-  - "traefik.http.routers.landing-grid.rule=Host(`your-domain.com`)"
-  - "traefik.http.routers.landing-grid.tls.certresolver=letsencrypt"
-```
-
-#### Volume Mounts
-
-```yaml
-volumes:
-  # Override nginx config
-  - ./custom-nginx.conf:/etc/nginx/conf.d/default.conf:ro
-  # Custom data directory
-  - ./custom-data:/app/data:ro
-```
-
-### 🔒 **Security Features**
-
-The Docker setup includes:
-
-- **Gzip compression** for faster loading
-- **Security headers** (XSS, CSRF, Content-Type protection)
-- **Content Security Policy** configured for theme assets
-- **Health checks** for container monitoring
-- **Non-root user** in production image
-- **Minimal Alpine Linux** base for security
-
-### 📊 **Production Optimization**
-
-- **Multi-stage build** - Smaller final image
-- **Static asset caching** - 1 year cache for assets
-- **Nginx optimization** - Performance tuned configuration
-- **Health monitoring** - Built-in health checks
-- **Graceful shutdown** - Proper signal handling
-
-### 🚀 **Deployment Examples**
-
-#### **Simple Production**
-```bash
-git clone https://github.com/fastup-one/landing-grid-zola
-cd landing-grid-zola
+# 2. Deploy with Docker Compose
 docker-compose up -d
 ```
 
-#### **With Custom Domain**
-```bash
-# Update docker-compose.yaml with your domain
-# Then deploy
-docker-compose --profile traefik up -d
+The site will be available at **http://localhost:8090**
+
+### 📁 **How It Works**
+
+The deployment approach is simple and efficient:
+
+1. **Build Locally**: Use `zola build` to generate static files in `public/`
+2. **Mount Volume**: Docker mounts `./public` to nginx web root
+3. **Serve Static**: Nginx serves the pre-built files with optimal performance
+
+### ⚙️ **Docker Configuration**
+
+The `docker-compose.yaml` is minimal and focused:
+
+```yaml
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: landing-grid-nginx
+    ports:
+      - "8090:80"  # Access at localhost:8090
+    volumes:
+      - ./public:/usr/share/nginx/html:ro  # Mount static files
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
 ```
 
-#### **Development**
+### 🔧 **Development Workflow**
+
 ```bash
-# Clone and develop
-git clone https://github.com/fastup-one/landing-grid-zola
-cd landing-grid-zola
-docker-compose --profile dev up
+# Development with local Zola server
+zola serve --port 8989  # http://localhost:8989
+
+# Update content, then rebuild and deploy
+zola build
+docker-compose restart
 ```
 
-Access your site at:
-- **Production**: `http://localhost` or your domain
-- **Development**: `http://localhost:1111`
-- **Traefik Dashboard**: `http://localhost:8080` (if using traefik profile)
+### 📊 **Production Benefits**
+
+This approach provides several advantages:
+
+- **🚀 Fast Deployment**: No build time in Docker, just static file serving
+- **🔧 Simple**: Single nginx container, no complex build stages
+- **💾 Efficient**: Small image size, only static files
+- **🔄 Easy Updates**: Rebuild locally, restart container
+- **⚡ Performance**: Direct nginx serving with optimal caching
+- **🛡️ Security**: Read-only volume mount, minimal attack surface
+
+### 🚀 **Deployment Commands**
+
+```bash
+# Start the service
+docker-compose up -d
+
+# Stop the service
+docker-compose down
+
+# View logs
+docker-compose logs -f
+
+# Restart after content changes
+zola build && docker-compose restart
+
+# Check container status
+docker-compose ps
+```
+
+### 🌐 **Custom Port**
+
+To change the port, edit `docker-compose.yaml`:
+
+```yaml
+ports:
+  - "80:80"      # Standard HTTP
+  - "8080:80"    # Alternative port
+  - "443:80"     # Behind reverse proxy
+```
+
+### 🔒 **Production Considerations**
+
+For production deployment:
+
+- Use a reverse proxy (Traefik, nginx, Cloudflare)
+- Configure SSL/TLS certificates
+- Set up automated builds and deployments
+- Monitor container health and logs
+- Backup your content and configuration
 
 ---
 
