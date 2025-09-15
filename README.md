@@ -188,10 +188,64 @@ Each navigation item supports:
 [[extra.nav]]
 name = "category-name"    # Display name in tooltips
 tag = "filter-tag"       # Tag to filter tiles
-icon = "font-awesome-icon" # FontAwesome icon name (without 'fa-')
+icon = "star"             # FontAwesome icon name (without 'fas fa-' prefix)
 ```
 
-**Available FontAwesome Icons**: `star`, `heart`, `wrench`, `briefcase`, `users`, `play`, `music`, `shopping-bag`, `search`, `home`, `cog`, `book`, `camera`, `gamepad`
+### 🎨 **Icon System**
+
+The theme uses **Font Awesome 6.5.0** solid icons for navigation. Simply specify the icon name without prefixes.
+
+#### **📚 Icon Reference:**
+- **Browse All Icons**: https://fontawesome.com/search?o=r&m=free&s=solid
+- **Icon Search**: https://fontawesome.com/icons
+
+#### **Popular Navigation Icons:**
+
+| Icon Name | Visual | Perfect For |
+|-----------|--------|-------------|
+| `star` | ⭐ | Favorites, bookmarks |
+| `heart` | ❤️ | Loved items, personal |
+| `home` | 🏠 | Dashboard, main |
+| `briefcase` | 💼 | Work, business tools |
+| `wrench` | 🔧 | Utilities, tools |
+| `users` | 👥 | Social, community |
+| `play` | ▶️ | Entertainment, media |
+| `music` | 🎵 | Music, audio apps |
+| `gamepad` | 🎮 | Games, gaming |
+| `shopping-bag` | 🛍️ | Shopping, e-commerce |
+| `code` | 💻 | Development, coding |
+| `chart-bar` | 📊 | Analytics, data |
+| `rocket` | 🚀 | Productivity, speed |
+| `shield-alt` | 🛡️ | Security, privacy |
+| `envelope` | ✉️ | Email, messages |
+| `camera` | 📷 | Photos, media |
+| `book` | 📚 | Reading, docs |
+| `cog` | ⚙️ | Settings, config |
+| `search` | 🔍 | Search, discovery |
+
+#### **How to Use:**
+1. Visit https://fontawesome.com/search?o=r&m=free&s=solid
+2. Search for your desired icon (e.g., "social", "work")
+3. Copy the icon name (e.g., "facebook" from "fa-facebook")
+4. Add to your config: `icon = "facebook"`
+
+#### **Example Custom Categories:**
+```toml
+[[extra.nav]]
+name = "development"
+tag = "dev"
+icon = "code"           # Development tools
+
+[[extra.nav]]
+name = "social media"
+tag = "social"
+icon = "users"          # Social platforms
+
+[[extra.nav]]
+name = "productivity"
+tag = "work"
+icon = "rocket"         # Work tools
+```
 
 ### Tile Properties
 
