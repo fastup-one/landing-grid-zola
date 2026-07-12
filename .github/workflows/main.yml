@@ -1,15 +1,15 @@
 name: Deploy to GitHub Pages
 
-# Deploys only from main. All actions are pinned to a full commit SHA (mutable
-# tags like @master are a supply-chain risk — finding SUP-02). Least-privilege:
-# the default token is read-only; only the deploy job gets pages/id-token write.
+# Builds the site and publishes it to the gh-pages branch (the Pages source).
+# Actions are pinned to a full commit SHA (finding SUP-02). Least-privilege:
+# contents:write is the only scope needed to push the built site to gh-pages.
 on:
   push:
     branches: [main]
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: pages
@@ -19,7 +19,7 @@ env:
   ZOLA_VERSION: "0.22.1"
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
@@ -32,22 +32,18 @@ jobs:
           curl -sSfL "https://github.com/getzola/zola/releases/download/v${ZOLA_VERSION}/zola-v${ZOLA_VERSION}-x86_64-unknown-linux-gnu.tar.gz" | sudo tar -xz -C /usr/local/bin
       - run: npm ci
       - run: npm run build-css-prod
-      - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
       - name: Build site
         run: zola build --minify
-      - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
-        with:
-          path: ./public
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
+      - name: Publish to gh-pages
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          touch public/.nojekyll
+          cd public
+          git init -q
+          git checkout -q -b gh-pages
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Deploy ${GITHUB_SHA} to Pages"
+          git push -f "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" gh-pages
