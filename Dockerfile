@@ -39,7 +39,7 @@ RUN npm run build-css-prod \
     && zola build --minify --base-url "${BASE_URL}"
 
 # ---- serve stage ----
-FROM nginx:1.27-alpine@sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10 AS runtime
+FROM nginx:1.31-alpine@sha256:54f2a904c251d5a34adf545a72d32515a15e08418dae0266e23be2e18c66fefa AS runtime
 
 RUN rm -f /etc/nginx/conf.d/default.conf
 COPY nginx/default.conf /etc/nginx/conf.d/default.conf
