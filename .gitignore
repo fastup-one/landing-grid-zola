@@ -2,6 +2,15 @@
 /public/
 /.zola_root
 
+# Local gate tooling & browser-test artifacts
+/.tools/
+/test-results/
+/playwright-report/
+/.lighthouseci/
+/.htmlcheck/
+/.config.htmlcheck.toml
+/.pa11yci.runtime.json
+
 # Node.js
 node_modules/
 npm-debug.log*
@@ -93,7 +102,6 @@ dist
 
 # Gatsby files
 .cache/
-public
 
 # Storybook build outputs
 .out

@@ -169,18 +169,14 @@ The theme uses CSS custom properties for easy customization:
 
 ### Tailwind Customization
 
-Edit `tailwind.config.js` to customize:
+This theme uses **Tailwind v4** (CSS-first). Customize the design tokens in the
+`@theme` block of `src/input.css` — there is no `tailwind.config.js`:
 
-```javascript
-theme: {
-  extend: {
-    colors: {
-      'brand': {
-        'primary': '#667eea',
-        'secondary': '#764ba2',
-      }
-    }
-  }
+```css
+@theme {
+  --color-brand-primary: #667eea;
+  --color-brand-secondary: #764ba2;
+  --font-inter: "Inter", sans-serif;
 }
 ```
 
@@ -233,15 +229,24 @@ npm run clean           # Clean build files
 ```
 themes/landing-grid/
 ├── templates/
-│   ├── base.html           # Base template
-│   ├── index.html          # Home page
+│   ├── base.html              # Shell: head, nav, hero (block), search
+│   ├── index.html             # Tile grid
+│   ├── page.html              # Content page
+│   ├── section.html           # Content section
+│   ├── 404.html               # Not-found page
 │   └── partials/
+│       └── icons.html         # Inline SVG icon macro
 ├── static/
-│   ├── css/               # Generated CSS
-│   └── js/                # Theme JavaScript
-├── theme.toml             # Theme metadata
+│   ├── css/tailwind.css       # Compiled stylesheet (built at repo root)
+│   ├── js/app.js              # Page behavior
+│   └── fonts/                 # Self-hosted Inter + JetBrains Mono
+├── theme.toml                 # Theme metadata
+├── screenshot.png
 └── README.md
 ```
+
+> The build tooling (`src/input.css`, `package.json`, `Makefile`, `scripts/`)
+> lives at the **repository root**, one level above this theme directory.
 
 ## 🚀 Deployment
 

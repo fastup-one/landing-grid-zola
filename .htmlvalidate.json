@@ -1,0 +1,11 @@
+{
+  "$schema": "https://html-validate.org/schemas/config.json",
+  "extends": ["html-validate:recommended"],
+  "rules": {
+    "no-trailing-whitespace": "off",
+    "doctype-style": "off",
+    "attr-quotes": "off",
+    "void-style": "off",
+    "no-inline-style": "off"
+  }
+}

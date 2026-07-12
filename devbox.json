@@ -1,0 +1,21 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/main/.schema/devbox.schema.json",
+  "packages": [
+    "zola@0.22.1",
+    "nodejs@22"
+  ],
+  "env": {},
+  "shell": {
+    "init_hook": [
+      "echo '🚀 landing-grid-zola dev environment (Zola 0.22.1 + Node 22)'",
+      "echo 'Run \"npm ci\" once, then \"make ci\" to run every gate, or \"npm run dev\".'"
+    ],
+    "scripts": {
+      "install": "npm ci",
+      "dev": "npm run dev",
+      "build": "make build",
+      "ci": "make ci",
+      "clean": "npm run clean"
+    }
+  }
+}

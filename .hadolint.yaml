@@ -1,0 +1,7 @@
+# hadolint config. Base images are pinned by digest, so require it.
+failure-threshold: warning
+trustedRegistries:
+  - docker.io
+ignored:
+  # DL3059 (consecutive RUN) — intentional layering for readability.
+  - DL3059

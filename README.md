@@ -322,41 +322,53 @@ Modify grid columns in `templates/index.html`:
 git clone https://github.com/fastup-one/landing-grid-zola
 cd landing-grid-zola
 
-# Install dependencies
-npm install
+# Install dependencies (reproducible; requires the committed lockfile)
+npm ci
+
+# Enable the fast pre-commit gate (once per clone)
+git config core.hooksPath .githooks
 
 # Start development with CSS watching
 npm run dev
 ```
 
-### Build Commands
+### Build & gate commands
 
 ```bash
-npm run build-css        # Build CSS with watching
-npm run build-css-prod   # Build minified production CSS  
-npm run dev             # Start Zola dev server + CSS watching
-npm run build           # Full production build
-npm run clean           # Clean generated files
+npm ci                   # Reproducible install (package-lock.json)
+npm run dev              # Zola dev server + Tailwind watch (http://localhost:1111)
+npm run build            # Production build (compiled CSS + zola build)
+make ci                  # Full gate battery: build, a11y, tests, lint, coverage
+make help                # List every gate target
 ```
 
-### File Structure
+Styling is compiled with **Tailwind v4** (`@tailwindcss/cli`) from `src/input.css`
+into `themes/landing-grid/static/css/tailwind.css`, which is linked by the theme.
+There is no CDN dependency at runtime and no `tailwind.config.js` (v4 is CSS-first).
+
+### Project structure
 
 ```
-themes/landing-grid/
-├── templates/
-│   ├── base.html           # Main template with navigation
-│   ├── index.html          # Grid layout and tile rendering
-│   └── partials/           # Reusable template components
-├── static/
-│   ├── css/
-│   │   └── tailwind.css    # Generated/compiled CSS
-│   └── js/                 # Theme JavaScript (if needed)
-├── src/
-│   └── input.css          # Source Tailwind CSS
-├── theme.toml             # Theme metadata
-├── tailwind.config.js     # Tailwind configuration
-├── package.json           # Build tools and dependencies
-└── README.md              # This documentation
+landing-grid-zola/
+├── config.toml                 # Site config (base_url, nav, minify_html)
+├── content/_index.md           # Home section
+├── data/links.toml             # Tile data (name / url / colors / tags) — validated at build
+├── src/input.css               # Tailwind v4 source (@theme, @plugin, components)
+├── package.json                # Build + gate tooling
+├── Makefile                    # Single entrypoint for every gate (make ci)
+├── Dockerfile  ·  nginx/       # Hardened container build + server config
+├── scripts/                    # invariants.mjs, validate-links.mjs, coverage-matrix.mjs
+└── themes/landing-grid/
+    ├── theme.toml
+    ├── templates/
+    │   ├── base.html           # Shell: head, nav, hero (block), search
+    │   ├── index.html          # Tile grid
+    │   ├── page.html · section.html · 404.html
+    │   └── partials/icons.html # Inline SVG icon macro
+    └── static/
+        ├── css/tailwind.css    # Compiled stylesheet (built; git-ignored)
+        ├── js/app.js           # Page behavior
+        └── fonts/              # Self-hosted Inter + JetBrains Mono
 ```
 
 ## 🚀 Deployment

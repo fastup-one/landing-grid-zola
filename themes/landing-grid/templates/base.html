@@ -1,115 +1,84 @@
-<!DOCTYPE html>
+{% import "partials/icons.html" as icons %}<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ config.title }}</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            'inter': ['Inter', 'sans-serif'],
-          }
-        }
-      }
-    }
-    </script>
-    
-    <style>
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes scaleIn {
-      from { opacity: 0; transform: scale(0.9); }
-      to { opacity: 1; transform: scale(1); }
-    }
-    @keyframes float {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-10px); }
-    }
-    @keyframes pulse-glow {
-      0%, 100% { box-shadow: 0 0 20px rgba(102, 126, 234, 0.3); }
-      50% { box-shadow: 0 0 30px rgba(102, 126, 234, 0.6); }
-    }
-    
-    .animate-fade-in { animation: fadeIn 0.6s ease-out; }
-    .animate-scale-in { animation: scaleIn 0.4s ease-out; }
-    .animate-float { animation: float 3s ease-in-out infinite; }
-    
-    .glass {
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-    
-    .glass-dark {
-      background: rgba(0, 0, 0, 0.2);
-      backdrop-filter: blur(15px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    
-    .tile-hover {
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    
-    .tile-hover:hover {
-      transform: translateY(-8px) scale(1.05);
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    }
-    </style>
+
+    {# SEO + social (finding SEO-01) #}
+    <meta name="description" content="{{ config.description }}">
+    <link rel="canonical" href="{{ current_url | default(value=config.base_url) | safe }}">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{{ config.title }}">
+    <meta property="og:description" content="{{ config.description }}">
+    <meta property="og:url" content="{{ current_url | default(value=config.base_url) | safe }}">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="{{ config.title }}">
+    <meta name="twitter:description" content="{{ config.description }}">
+
+    {# Favicon (finding SEO-02). Root-relative so it loads on any host/port and
+       stays same-origin under the CSP (localhost vs 127.0.0.1 are distinct
+       origins to the browser). #}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+
+    {# Content-Security-Policy for the GitHub Pages path, which cannot set HTTP
+       headers. The nginx path sets an equivalent (plus header-only directives
+       like frame-ancestors) in nginx/default.conf. Self-only: our JS is an
+       external file so script-src is 'self'. #}
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+    <meta name="referrer" content="no-referrer">
+
+    {# Root-relative asset URLs: origin-agnostic, so the CSP 'self' always matches
+       regardless of the host/port the site is served on. #}
+    <link rel="stylesheet" href="/css/tailwind.css">
 </head>
 
 <body class="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 font-inter overflow-x-hidden">
     <!-- Animated background elements -->
     <div class="fixed inset-0 overflow-hidden pointer-events-none">
         <div class="absolute -top-40 -right-40 w-80 h-80 bg-white opacity-5 rounded-full animate-float"></div>
-        <div class="absolute top-1/2 -left-20 w-60 h-60 bg-white opacity-3 rounded-full animate-float" style="animation-delay: 1s;"></div>
+        <div class="absolute top-1/2 -left-20 w-60 h-60 bg-white opacity-5 rounded-full animate-float" style="animation-delay: 1s;"></div>
         <div class="absolute bottom-20 right-20 w-40 h-40 bg-white opacity-10 rounded-full animate-float" style="animation-delay: 2s;"></div>
     </div>
 
     <!-- Enhanced Professional Navigation -->
     <nav class="fixed left-0 top-0 h-full w-16 z-50 glass-dark border-r border-white/10">
         <div class="h-full flex flex-col items-center py-6">
-            <!-- Logo -->
-            <div class="mb-8 p-3 rounded-xl bg-white/10 hover:bg-white/15 transition-all duration-200 cursor-pointer">
-                <i class="fas fa-home text-white text-xl"></i>
-            </div>
-            
+            <!-- Logo (a real link, not a decorative div — finding HTML-01) -->
+            <a href="/" aria-label="Home"
+               class="mb-8 p-3 rounded-xl bg-white/10 hover:bg-white/15 transition-all duration-200 flex items-center justify-center">
+                {{ icons::icon(name="home", class="w-5 h-5 text-white") }}
+            </a>
+
             <!-- Nav Items -->
             <ul class="flex-1 flex flex-col items-center space-y-3">
                 <li>
-                    <a href="#" class="nav-item active" data-filter="all" title="All Apps">
-                        <i class="fas fa-th text-lg"></i>
-                        <div class="nav-indicator"></div>
+                    <a href="#" class="nav-item active" data-filter="all" aria-label="All apps" aria-current="true" title="All Apps">
+                        {{ icons::icon(name="th", class="w-5 h-5") }}
+                        <div class="nav-indicator" aria-hidden="true"></div>
                     </a>
                 </li>
                 {% for nav_item in config.extra.nav %}
                 <li>
-                    <a href="#{{ nav_item.tag }}" class="nav-item" data-filter="{{ nav_item.tag }}" title="{{ nav_item.name | title }}">
-                        <i class="fas fa-{{ nav_item.icon }} text-lg"></i>
-                        <div class="nav-indicator"></div>
+                    <a href="#{{ nav_item.tag }}" class="nav-item" data-filter="{{ nav_item.tag }}" aria-label="{{ nav_item.name | title }}" title="{{ nav_item.name | title }}">
+                        {{ icons::icon(name=nav_item.icon, class="w-5 h-5") }}
+                        <div class="nav-indicator" aria-hidden="true"></div>
                     </a>
                 </li>
                 {% endfor %}
             </ul>
-            
-            <!-- App Counter -->
+
+            <!-- App Counter (announced to assistive tech — finding A11Y-03) -->
             <div class="mt-4 text-center">
-                <div id="nav-counter" class="text-xs text-white/50 font-medium"></div>
+                <div id="nav-counter" class="text-xs text-white/80 font-medium" role="status" aria-live="polite" aria-label="Visible app count"></div>
             </div>
         </div>
     </nav>
-    
+
     <!-- Main Content -->
     <main class="ml-16 min-h-screen">
         <div class="container mx-auto px-6 py-16">
+            {% block hero %}
             <!-- Hero -->
             <div class="text-center mb-16 animate-fade-in">
                 <h1 class="text-5xl lg:text-7xl font-bold text-white mb-6">
@@ -121,326 +90,28 @@
                     Your personal dashboard to access all your favorite websites and tools
                 </p>
             </div>
-            
+
             <!-- Search -->
             <div class="max-w-2xl mx-auto mb-12 animate-fade-in" style="animation-delay: 0.2s;">
                 <div class="relative">
-                    <input type="text" 
-                           id="search-input" 
+                    <label for="search-input" class="sr-only">Search apps and tools</label>
+                    <input type="search"
+                           id="search-input"
                            placeholder="Search your apps and tools..."
-                           class="w-full px-6 py-4 pl-14 glass rounded-2xl text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-white/30 transition-all duration-300">
-                    <div class="absolute left-5 top-1/2 transform -translate-y-1/2">
-                        <i class="fas fa-search text-gray-300"></i>
+                           autocomplete="off"
+                           class="w-full px-6 py-4 pl-14 glass rounded-2xl text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-white/40 transition-all duration-300">
+                    <div class="absolute left-5 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                        {{ icons::icon(name="search", class="w-5 h-5 text-gray-300") }}
                     </div>
                 </div>
             </div>
-            
+            {% endblock hero %}
+
             <!-- Grid -->
             {% block content %}{% endblock %}
         </div>
     </main>
 
-    <style>
-    /* Enhanced Professional Navigation with Better Active States */
-    .nav-item {
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 48px;
-        height: 48px;
-        border-radius: 12px;
-        color: rgba(255, 255, 255, 0.5);
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        transform: scale(1);
-        backdrop-filter: blur(10px);
-    }
-    
-    .nav-item:hover {
-        color: rgba(255, 255, 255, 0.9);
-        background: rgba(255, 255, 255, 0.15);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        transform: scale(1.05);
-        box-shadow: 0 8px 25px rgba(255, 255, 255, 0.1);
-    }
-    
-    .nav-item.active {
-        color: white;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        transform: scale(1.1);
-        animation: pulse-glow 2s ease-in-out infinite;
-        box-shadow: 0 0 20px rgba(102, 126, 234, 0.4), 0 8px 32px rgba(0, 0, 0, 0.3);
-    }
-    
-    .nav-item.active:hover {
-        transform: scale(1.15);
-        box-shadow: 0 0 30px rgba(102, 126, 234, 0.6), 0 12px 40px rgba(0, 0, 0, 0.4);
-    }
-    
-    .nav-indicator {
-        position: absolute;
-        right: -8px;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 4px;
-        height: 32px;
-        background: linear-gradient(to bottom, #667eea, #764ba2);
-        border-radius: 9999px;
-        opacity: 0;
-        transition: all 0.3s ease;
-        box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
-    }
-    
-    .nav-item.active .nav-indicator {
-        opacity: 1;
-        transform: translateY(-50%) scale(1.2);
-        box-shadow: 0 0 15px rgba(102, 126, 234, 0.8);
-    }
-    
-    /* Smooth fade transitions for tiles */
-    .tile {
-        transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-                    transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-                    filter 0.4s ease;
-    }
-    
-    .tile.fade-out {
-        opacity: 0;
-        transform: scale(0.95);
-        filter: blur(2px);
-    }
-    
-    .tile.fade-in {
-        opacity: 1;
-        transform: scale(1);
-        filter: blur(0px);
-    }
-
-    /* Enhanced category display */
-    #nav-counter {
-        padding: 4px 8px;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 6px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        font-size: 10px;
-        font-weight: 500;
-        transition: all 0.3s ease;
-    }
-    </style>
-
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const navItems = document.querySelectorAll('.nav-item');
-        const tiles = document.querySelectorAll('.tile');
-        const searchInput = document.getElementById('search-input');
-        const navCounter = document.getElementById('nav-counter');
-        
-        // Convert tile icons to show first letter only
-        document.querySelectorAll('.tile-icon').forEach(icon => {
-            const name = icon.getAttribute('data-name');
-            if (name) {
-                icon.textContent = name.charAt(0).toUpperCase();
-            }
-        });
-        
-        // Stagger tile animations on initial load
-        tiles.forEach((tile, index) => {
-            tile.style.animationDelay = `${index * 0.1}s`;
-            tile.classList.add('animate-scale-in');
-        });
-        
-        // Update counter with enhanced display
-        function updateCounter(filter, visibleCount) {
-            if (navCounter) {
-                const totalCount = tiles.length;
-                if (filter === 'all') {
-                    navCounter.textContent = `${totalCount} apps`;
-                    navCounter.style.color = 'rgba(255, 255, 255, 0.7)';
-                } else {
-                    navCounter.textContent = `${visibleCount}/${totalCount}`;
-                    navCounter.style.color = 'rgba(102, 126, 234, 0.9)';
-                }
-            }
-        }
-        
-        // Enhanced filtering with smooth transitions
-        function filterTiles(filter) {
-            let visibleCount = 0;
-            const filterName = filter === 'all' ? 'All Apps' : 
-                               document.querySelector(`[data-filter="${filter}"]`)?.title || filter;
-            
-            // Phase 1: Fade out all tiles
-            tiles.forEach(tile => {
-                tile.classList.add('fade-out');
-                tile.classList.remove('fade-in');
-            });
-            
-            // Phase 2: After fade out, determine visibility and fade in relevant tiles
-            setTimeout(() => {
-                tiles.forEach((tile, index) => {
-                    const groups = tile.getAttribute('data-groups') || '';
-                    const shouldShow = filter === 'all' || groups.includes(filter);
-                    
-                    if (shouldShow) {
-                        visibleCount++;
-                        tile.style.display = 'block';
-                        
-                        // Staggered fade in
-                        setTimeout(() => {
-                            tile.classList.remove('fade-out');
-                            tile.classList.add('fade-in');
-                        }, index * 50);
-                    } else {
-                        tile.style.display = 'none';
-                    }
-                });
-                
-                updateCounter(filter, visibleCount);
-                
-                // Show empty state if no tiles visible
-                checkEmptyState();
-            }, 200);
-        }
-        
-        // Enhanced search with smooth transitions
-        function searchTiles(query) {
-            let visibleCount = 0;
-            
-            tiles.forEach(tile => {
-                tile.classList.add('fade-out');
-                tile.classList.remove('fade-in');
-            });
-            
-            setTimeout(() => {
-                tiles.forEach((tile, index) => {
-                    const title = tile.querySelector('.tile-title').textContent.toLowerCase();
-                    const shouldShow = title.includes(query.toLowerCase());
-                    
-                    if (shouldShow) {
-                        visibleCount++;
-                        tile.style.display = 'block';
-                        
-                        setTimeout(() => {
-                            tile.classList.remove('fade-out');
-                            tile.classList.add('fade-in');
-                        }, index * 30);
-                    } else {
-                        tile.style.display = 'none';
-                    }
-                });
-                
-                if (query) {
-                    navCounter.textContent = `${visibleCount} found`;
-                    navCounter.style.color = 'rgba(34, 197, 94, 0.9)';
-                } else {
-                    updateCounter('all', tiles.length);
-                }
-                
-                checkEmptyState();
-            }, 150);
-        }
-        
-        // Check for empty state
-        function checkEmptyState() {
-            const visibleTiles = document.querySelectorAll('.tile:not([style*="display: none"])');
-            const emptyState = document.getElementById('empty-state');
-            
-            if (emptyState) {
-                if (visibleTiles.length === 0) {
-                    emptyState.classList.remove('hidden');
-                } else {
-                    emptyState.classList.add('hidden');
-                }
-            }
-        }
-        
-        // Enhanced navigation click handlers
-        navItems.forEach(item => {
-            item.addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                // Clear search when filtering
-                if (searchInput) {
-                    searchInput.value = '';
-                }
-                
-                // Update active state with enhanced feedback
-                navItems.forEach(nav => nav.classList.remove('active'));
-                this.classList.add('active');
-                
-                // Add a brief scale animation for feedback
-                this.style.transform = 'scale(1.2)';
-                setTimeout(() => {
-                    this.style.transform = '';
-                }, 150);
-                
-                const filter = this.getAttribute('data-filter');
-                filterTiles(filter);
-                
-                // Update URL hash
-                if (filter !== 'all') {
-                    window.history.replaceState({}, '', '#' + filter);
-                } else {
-                    window.history.replaceState({}, '', '/');
-                }
-            });
-        });
-        
-        // Search functionality
-        let searchTimeout;
-        if (searchInput) {
-            searchInput.addEventListener('input', function(e) {
-                const query = e.target.value;
-                
-                // Clear active nav state when searching
-                if (query) {
-                    navItems.forEach(nav => nav.classList.remove('active'));
-                }
-                
-                // Debounce search for better performance
-                clearTimeout(searchTimeout);
-                searchTimeout = setTimeout(() => {
-                    searchTiles(query);
-                }, 200);
-            });
-        }
-        
-        // Initialize counter
-        updateCounter('all', tiles.length);
-        
-        // Handle initial URL hash
-        if (window.location.hash) {
-            const hash = window.location.hash.substring(1);
-            const navItem = document.querySelector(`[data-filter="${hash}"]`);
-            if (navItem) {
-                setTimeout(() => {
-                    navItem.click();
-                }, 500);
-            }
-        }
-        
-        // Add keyboard shortcuts
-        document.addEventListener('keydown', function(e) {
-            // ESC to clear search and show all
-            if (e.key === 'Escape') {
-                if (searchInput) {
-                    searchInput.value = '';
-                    searchInput.blur();
-                }
-                document.querySelector('[data-filter="all"]').click();
-            }
-            
-            // Number keys for quick navigation
-            const numKey = parseInt(e.key);
-            if (numKey >= 1 && numKey <= navItems.length && !e.ctrlKey && !e.metaKey) {
-                navItems[numKey - 1].click();
-            }
-        });
-    });
-    </script>
+    <script src="/js/app.js" defer></script>
 </body>
 </html>

@@ -1,13 +1,13 @@
 name = "landing-grid"
 description = "A professional, responsive landing grid theme for Zola"
 license = "MIT"
-min_version = "0.17.0"
+min_version = "0.19.0"
 homepage = "https://github.com/fastup-one/landing-grid-zola"
-demo = "https://yourdemo.com/landing-grid"
+demo = "https://landing-grid.fastup.one"
 keywords = ["landing-page", "dashboard", "grid", "responsive", "modern"]
 
 [author]
-name = "Landing Grid Team"
+name = "fastup-one"
 homepage = "https://github.com/fastup-one"
 
 [extra]

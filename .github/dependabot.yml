@@ -1,0 +1,22 @@
+version: 2
+# Keeps the flagged pins fresh (findings SUP-05, INFO-01): npm deps, the
+# SHA-pinned GitHub Actions, and the Docker base images.
+updates:
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      dev-tooling:
+        patterns: ["*"]
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: docker
+    directory: "/"
+    schedule:
+      interval: weekly

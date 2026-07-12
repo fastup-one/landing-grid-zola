@@ -1,17 +1,45 @@
-version: '3.8'
-
+# Self-contained local/self-hosting deployment: builds the site from source and
+# serves it from a hardened nginx. `docker compose up --build` just works on a
+# fresh clone (finding OPS-03) — nothing needs to be pre-built on the host.
 services:
-  nginx:
-    image: docker.io/nginx:alpine
-    container_name: landing-grid-nginx
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      # Asset URLs are root-relative, so they load on any host/port. BASE_URL
+      # only sets absolute SEO URLs (canonical/sitemap); override it to your own
+      # domain when self-hosting. Defaults to the project's production domain.
+      args:
+        BASE_URL: https://landing-grid.fastup.one
+    image: landing-grid:local
+    container_name: landing-grid
+    # Bind to loopback only — not every host interface (finding OPS-07).
     ports:
-      - "8090:80"
-    volumes:
-      - ./public:/usr/share/nginx/html:ro
+      - "127.0.0.1:8090:80"
     restart: unless-stopped
+    # Container hardening (findings OPS-05, OPS-06).
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      # Minimum caps for nginx to bind :80 and drop to the nginx worker user.
+      - CHOWN
+      - SETGID
+      - SETUID
+      - NET_BIND_SERVICE
+      - DAC_OVERRIDE
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+      - /tmp
+    mem_limit: 128m
+    pids_limit: 128
+    cpus: 0.5
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1/"]
       interval: 30s
-      timeout: 10s
+      timeout: 5s
       retries: 3
       start_period: 5s

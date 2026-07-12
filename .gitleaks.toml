@@ -1,0 +1,16 @@
+# gitleaks config — default ruleset plus allowlist for GitHub Actions token
+# expressions, which are references (resolved at runtime by GitHub), not secrets.
+title = "landing-grid-zola gitleaks"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "GitHub Actions secret expressions and generated artifacts"
+paths = [
+  '''package-lock\.json''',
+  '''\.tools/''',
+]
+regexes = [
+  '''\$\{\{\s*secrets\.[A-Za-z_][A-Za-z0-9_]*\s*\}\}''',
+]

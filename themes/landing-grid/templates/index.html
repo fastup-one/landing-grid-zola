@@ -1,31 +1,28 @@
 {% extends "base.html" %}
+{% import "partials/icons.html" as icons %}
 
 {% block content %}
 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 max-w-7xl mx-auto">
     {% set jump = config.extra.open_links_in_new_window | default(value=true) %}
     {% set data = load_data(path="data/links.toml") %}
     {% for tile in data.tiles %}
-        <div class="tile" data-groups="{% if tile.tags %}{{ tile.tags | join(sep=',') }}{% endif %}">
-            <a href="{{ tile.url }}" 
+        {# Defense in depth (SEC-03): only http(s)/root-relative schemes reach the
+           href. data/links.toml is also validated at build time. #}
+        {% set url_ok = tile.url is starting_with("https://") or tile.url is starting_with("http://") or tile.url is starting_with("/") %}
+        <div class="tile" data-groups="{% if tile.tags %}{{ tile.tags | join(sep=',') }}{% endif %}" data-name="{{ tile.name }}">
+            <a href="{% if url_ok %}{{ tile.url }}{% else %}#{% endif %}"
                {% if jump %}target="_blank" rel="noopener noreferrer"{% endif %}
-               class="block tile-hover rounded-2xl p-6 h-32 flex flex-col items-center justify-center text-center"
-               style="{% if tile.bg_color %}background: linear-gradient(135deg, {{ tile.bg_color }}CC, {{ tile.bg_color }}99);{% else %}background: rgba(255,255,255,0.1);{% endif %}backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
-                
-                <!-- Icon/Letter -->
-                <div class="tile-icon w-12 h-12 rounded-xl flex items-center justify-center mb-3 text-2xl font-bold"
-                     style="{% if tile.bg_color %}background-color: {{ tile.bg_color }};{% else %}background: rgba(255,255,255,0.2);{% endif %}{% if tile.txt_color %}color: {{ tile.txt_color }};{% else %}color: #FFFFFF;{% endif %}"
-                     data-name="{{ tile.name }}">
-                    {{ tile.name }}
-                </div>
-                
-                <!-- Tags (hidden, for filtering) -->
-                <div class="hidden">{{ tile.tags | default(value=[]) | join(sep=" ") }}</div>
+               aria-label="{{ tile.name }}"
+               class="block rounded-2xl text-center focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60">
+                <span class="tile-hover block rounded-2xl p-6 h-32 flex flex-col items-center justify-center"
+                      style="{% if tile.bg_color %}background: linear-gradient(135deg, {{ tile.bg_color }}CC, {{ tile.bg_color }}99);{% else %}background: rgba(255,255,255,0.1);{% endif %}backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
+                    <span class="tile-icon w-12 h-12 rounded-xl flex items-center justify-center text-2xl font-bold"
+                          aria-hidden="true"
+                          style="{% if tile.bg_color %}background-color: {{ tile.bg_color }};{% else %}background: rgba(255,255,255,0.2);{% endif %}{% if tile.txt_color %}color: {{ tile.txt_color }};{% else %}color: #FFFFFF;{% endif %}"
+                          data-name="{{ tile.name }}"></span>
+                </span>
+                <span class="tile-title mt-3 block text-sm font-medium text-white truncate">{{ tile.name }}</span>
             </a>
-            
-            <!-- Title -->
-            <div class="tile-title mt-3 text-center">
-                <h3 class="text-sm font-medium text-white truncate">{{ tile.name }}</h3>
-            </div>
         </div>
     {% endfor %}
 </div>
@@ -33,8 +30,8 @@
 <!-- Empty State -->
 <div id="empty-state" class="hidden text-center py-20">
     <div class="glass rounded-3xl p-12 max-w-md mx-auto">
-        <i class="fas fa-search text-4xl text-white/50 mb-6"></i>
-        <h3 class="text-xl font-semibold text-white mb-4">No apps found</h3>
+        <div class="flex justify-center text-white/60 mb-6">{{ icons::icon(name="search", class="w-10 h-10") }}</div>
+        <h2 class="text-xl font-semibold text-white mb-4">No apps found</h2>
         <p class="text-white/70">Try adjusting your search or filter.</p>
     </div>
 </div>

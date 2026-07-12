@@ -1,11 +1,14 @@
-base_url = "http://localhost:1111"
+base_url = "https://landing-grid.fastup.one"
 title = "Modern Landing Grid"
 description = "A beautiful, responsive landing page with your favorite tools and websites"
 
 theme = "landing-grid"
 
+# Minify the generated HTML (finding PERF-03).
+minify_html = true
+
 [extra]
-favicon = "favicon.ico"
+favicon = "favicon.svg"
 open_links_in_new_window = true
 
 [[extra.nav]]

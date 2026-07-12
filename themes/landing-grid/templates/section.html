@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{# Renders a content section (index.md of a subfolder) instead of Zola's
+   built-in placeholder (finding TPL-01). Suppresses the grid hero. #}
+{% block hero %}{% endblock hero %}
+
+{% block content %}
+<section class="max-w-3xl mx-auto">
+    <article class="prose prose-invert lg:prose-lg glass rounded-3xl p-8 lg:p-12">
+        <h1>{{ section.title }}</h1>
+        {{ section.content | safe }}
+    </article>
+    {% if section.pages %}
+    <ul class="mt-8 space-y-3">
+        {% for page in section.pages %}
+        <li>
+            <a href="{{ page.permalink | safe }}"
+               class="block glass rounded-2xl p-5 text-white hover:bg-white/15 transition-colors">
+                {{ page.title }}
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+</section>
+{% endblock content %}

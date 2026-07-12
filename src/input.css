@@ -1,169 +1,248 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-/* Import Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+/* Explicit source globs so utility scanning never depends on .gitignore state. */
+@source "../themes/landing-grid/templates";
+@source "../content";
 
-/* Custom Base Styles */
+/* Self-hosted fonts (finding SUP-03): served from our own origin — no Google
+   Fonts request, no visitor-IP leak, no third-party availability dependency.
+   Variable fonts: one file each covers every weight. Files live in the theme's
+   static/fonts and are served at /fonts/* (site deploys at the domain root). */
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("/fonts/inter-latin-wght-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 800;
+  src: url("/fonts/jetbrains-mono-latin-wght-normal.woff2") format("woff2");
+}
+
+@plugin "@tailwindcss/forms";
+@plugin "@tailwindcss/typography";
+
+/* ---------------------------------------------------------------------------
+   Theme (migrated from the former tailwind.config.js). v4 is CSS-first: theme
+   values are custom properties in the --namespace-* form and auto-generate the
+   matching utilities (e.g. --font-inter -> font-inter, --color-brand-* -> bg/
+   text/border-brand-*, --animate-* -> animate-*, --breakpoint-* -> xs:/3xl:).
+--------------------------------------------------------------------------- */
+@theme {
+  --font-inter: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --color-brand-primary: #667eea;
+  --color-brand-secondary: #764ba2;
+  --color-brand-accent: #f093fb;
+
+  --breakpoint-xs: 475px;
+  --breakpoint-3xl: 1600px;
+
+  --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  --shadow-glass-hover: 0 8px 32px 0 rgba(31, 38, 135, 0.5);
+  --shadow-glow: 0 0 20px rgba(102, 126, 234, 0.3);
+  --shadow-glow-strong: 0 0 40px rgba(102, 126, 234, 0.5);
+
+  --animate-fade-in: fadeIn 0.6s ease-out;
+  --animate-slide-up: slideUp 0.6s ease-out;
+  --animate-scale-in: scaleIn 0.4s ease-out;
+  --animate-float: float 3s ease-in-out infinite;
+}
+
+/* Keyframes at top level so they are always emitted, including those referenced
+   only by component classes (scaleIn, pulse-glow) rather than utilities. */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(102, 126, 234, 0.3); }
+  50% { box-shadow: 0 0 30px rgba(102, 126, 234, 0.6); }
+}
+
+/* ---------------------------------------------------------------------------
+   Base
+--------------------------------------------------------------------------- */
 @layer base {
   body {
-    @apply antialiased;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     font-feature-settings: 'cv04', 'cv03', 'cv02', 'cv01';
     text-rendering: optimizeLegibility;
   }
-  
-  /* Smooth scrolling */
+
   html {
     scroll-behavior: smooth;
   }
-  
-  /* Custom scrollbar */
-  ::-webkit-scrollbar {
-    @apply w-2;
-  }
-  
-  ::-webkit-scrollbar-track {
-    @apply bg-black/10;
-  }
-  
-  ::-webkit-scrollbar-thumb {
-    @apply bg-white/30 rounded-full;
-  }
-  
-  ::-webkit-scrollbar-thumb:hover {
-    @apply bg-white/50;
-  }
+
+  ::-webkit-scrollbar { width: 0.5rem; }
+  ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.1); }
+  ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.3); border-radius: 9999px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.5); }
 }
 
-/* Custom Components */
+/* ---------------------------------------------------------------------------
+   Components — single source of truth for the theme's custom classes. These
+   previously lived duplicated in base.html <style> blocks (finding CSS-02);
+   they now live here and are shipped via the compiled stylesheet only.
+--------------------------------------------------------------------------- */
 @layer components {
-  /* Glass morphism effects */
+  /* Glassmorphism */
   .glass {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
   }
-  
   .glass-dark {
     background: rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
-  
   .glass-strong {
     background: rgba(255, 255, 255, 0.15);
     backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.25);
   }
-  
-  /* Enhanced tile hover effects */
+
+  /* Local animation helpers (kept as classes for markup that toggles them) */
+  .animate-scale-in { animation: scaleIn 0.4s ease-out; }
+
+  /* Tile card */
   .tile-hover {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  
   .tile-hover:hover {
     transform: translateY(-8px) scale(1.05);
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   }
-  
-  /* Navigation Components */
-  .nav-item {
-    @apply relative flex items-center justify-center transition-all duration-300 group;
-    width: 48px;
-    height: 48px;
-  }
-  
-  .nav-icon-bg {
-    @apply w-12 h-12 lg:w-14 lg:h-14 rounded-xl flex items-center justify-center text-white/70 transition-all duration-300 relative;
-    background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
-    border: 1px solid rgba(255,255,255,0.1);
-    backdrop-filter: blur(10px);
-  }
-  
-  .nav-item:hover .nav-icon-bg {
-    @apply text-white scale-105;
-    background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.1));
-    border: 1px solid rgba(255,255,255,0.2);
-    box-shadow: 0 8px 25px rgba(255,255,255,0.1);
-  }
-  
-  .nav-item.active .nav-icon-bg {
-    @apply text-white;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    border: 1px solid rgba(255,255,255,0.3);
-    box-shadow: 0 8px 25px rgba(102,126,234,0.3);
-  }
-  
-  .nav-indicator {
-    @apply absolute -right-1 top-1/2 transform -translate-y-1/2 w-1 h-6 bg-white rounded-full opacity-0 scale-y-0 transition-all duration-300;
-  }
-  
-  .nav-item.active .nav-indicator {
-    @apply opacity-100 scale-y-100;
-    background: linear-gradient(to bottom, #667eea, #764ba2);
-    box-shadow: 0 0 10px rgba(102,126,234,0.5);
-  }
-  
-  .nav-tooltip {
-    @apply absolute left-full ml-4 px-3 py-2 bg-black/80 text-white text-sm rounded-lg opacity-0 scale-95 transition-all duration-200 whitespace-nowrap pointer-events-none z-50;
-    backdrop-filter: blur(10px);
-  }
-  
-  .nav-item:hover .nav-tooltip {
-    @apply opacity-100 scale-100;
-  }
-}
 
-/* Custom Utilities */
-@layer utilities {
-  /* Animation utilities */
-  .animate-stagger {
-    animation-delay: var(--stagger-delay, 0ms);
-  }
-  
-  /* Tile transition utilities */
-  .tile-transition {
+  .tile {
     transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
                 transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
                 filter 0.4s ease;
   }
-  
-  .tile-fade-out {
-    opacity: 0;
-    transform: scale(0.95);
-    filter: blur(2px);
-  }
-  
-  .tile-fade-in {
-    opacity: 1;
+  .tile.fade-out { opacity: 0; transform: scale(0.95); filter: blur(2px); }
+  .tile.fade-in { opacity: 1; transform: scale(1); filter: blur(0px); }
+
+  /* Sidebar navigation */
+  .nav-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                background 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     transform: scale(1);
-    filter: blur(0px);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
   }
-  
-  /* Glow effects */
-  .glow-subtle {
-    box-shadow: 0 0 20px rgba(102, 126, 234, 0.2);
+  .nav-item:hover {
+    color: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+    box-shadow: 0 8px 25px rgba(255, 255, 255, 0.1);
   }
-  
-  .glow-medium {
-    box-shadow: 0 0 30px rgba(102, 126, 234, 0.4);
+  .nav-item.active {
+    color: #ffffff;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+    animation: pulse-glow 2s ease-in-out infinite;
+    box-shadow: 0 0 20px rgba(102, 126, 234, 0.4), 0 8px 32px rgba(0, 0, 0, 0.3);
   }
-  
-  .glow-strong {
-    box-shadow: 0 0 40px rgba(102, 126, 234, 0.6);
+  .nav-item.active:hover {
+    transform: scale(1.15);
+    box-shadow: 0 0 30px rgba(102, 126, 234, 0.6), 0 12px 40px rgba(0, 0, 0, 0.4);
+  }
+  /* Visible keyboard focus (finding A11Y-02) */
+  .nav-item:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 2px;
+  }
+
+  .nav-indicator {
+    position: absolute;
+    right: -8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 32px;
+    background: linear-gradient(to bottom, #667eea, #764ba2);
+    border-radius: 9999px;
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+  }
+  .nav-item.active .nav-indicator {
+    opacity: 1;
+    transform: translateY(-50%) scale(1.2);
+    box-shadow: 0 0 15px rgba(102, 126, 234, 0.8);
+  }
+
+  #nav-counter {
+    padding: 4px 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    font-weight: 500;
+    transition: color 0.3s ease;
+  }
+  /* Result tones (finding A11Y-05: readable, higher-contrast than the old white/50). */
+  #nav-counter[data-tone="filter"] { color: rgb(199 210 254); }
+  #nav-counter[data-tone="search"] { color: rgb(134 239 172); }
+
+  /* Class-based visibility toggle (finding JS-03: no inline-style string matching). */
+  .is-hidden { display: none !important; }
+}
+
+/* Respect reduced-motion (finding A11Y-04): stop the infinite float/pulse and
+   collapse transitions for users who ask for less motion. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
-/* Responsive Design Fixes */
-@screen lg {
-  .nav-tooltip {
-    @apply block;
-  }
-}
-
-@screen max-lg {
-  .nav-tooltip {
-    @apply hidden;
-  }
-}
+/* ---------------------------------------------------------------------------
+   Utilities
+--------------------------------------------------------------------------- */
+@utility glow-subtle { box-shadow: 0 0 20px rgba(102, 126, 234, 0.2); }
+@utility glow-medium { box-shadow: 0 0 30px rgba(102, 126, 234, 0.4); }
+@utility glow-strong { box-shadow: 0 0 40px rgba(102, 126, 234, 0.6); }
