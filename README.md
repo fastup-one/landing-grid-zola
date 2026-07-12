@@ -1,638 +1,175 @@
-# 🚀 Landing Grid - Zola Theme
+# Landing Grid
 
-> **Migrated from Hugo Slate Theme** - A complete migration and modernization of the popular Hugo Slate theme to Zola with enhanced features and modern design.
+A fast, responsive personal start page / link dashboard built with
+[Zola](https://www.getzola.org/) and Tailwind CSS v4. Your links are defined in
+one TOML file and rendered as a searchable, filterable grid of glassmorphic
+tiles — no runtime CDNs, no third‑party requests.
 
-A professional, responsive landing grid theme for Zola static site generator. Perfect for creating beautiful dashboards, app launchers, and link directories with a modern glassmorphism design.
+![Landing Grid](themes/landing-grid/screenshot.png)
 
-![Landing Grid Preview](screenshot.png)
+## Features
 
-## 🔄 **Migration from Hugo Slate**
+- **Data‑driven** — add or edit links in `data/links.toml`; no template edits needed.
+- **Search & category filters** — instant client‑side search and sidebar filters.
+- **Self‑contained** — self‑hosted fonts (Inter, JetBrains Mono) and inline SVG
+  icons; nothing loads from a CDN at runtime.
+- **Accessible** — keyboard support, ARIA labels, visible focus, reduced‑motion
+  support, and AA‑contrast checks enforced in CI.
+- **Secure by default** — a strict Content‑Security‑Policy, build‑time validation
+  of link data, and a hardened container image.
+- **Fully gated** — one command (`make ci`) runs build, accessibility, behavior,
+  performance, and supply‑chain checks; CI adds an end‑to‑end container test.
 
-This theme is a **complete migration** from the Hugo Slate theme to Zola, featuring:
+## Requirements
 
-### **What Was Preserved**
-- ✅ Core speed dial functionality
-- ✅ Tile-based navigation system
-- ✅ Category filtering capabilities
-- ✅ Search functionality
-- ✅ Responsive grid layout
-- ✅ Link management system
+- [Zola](https://www.getzola.org/documentation/getting-started/installation/) 0.19+
+- Node.js 22+
 
-### **What Was Enhanced**
-- 🆕 **Modern Glassmorphism Design** - Backdrop blur effects and glass panels
-- 🆕 **Professional Navigation** - Clean sidebar with smooth animations
-- 🆕 **Tailwind CSS Integration** - Modern utility-first CSS framework
-- 🆕 **Enhanced Animations** - Smooth fade transitions and hover effects
-- 🆕 **Better Responsiveness** - Optimized for all screen sizes
-- 🆕 **Keyboard Shortcuts** - ESC to clear, number keys for navigation
-- 🆕 **URL Hash Support** - Shareable filtered views
-- 🆕 **Production Build System** - Optimized CSS compilation
+A pinned toolchain is provided via [devbox](https://www.jetify.com/devbox)
+(`devbox shell`).
 
-## ✨ Features
-
-### 🎨 **Modern Design**
-- **Glassmorphism Effects**: Beautiful backdrop blur and transparency
-- **Gradient Backgrounds**: Stunning color gradients (indigo → purple → pink)
-- **Professional Navigation**: Clean sidebar with icon-based filtering
-- **Smooth Animations**: Fade transitions, hover effects, and loading animations
-- **Typography**: Inter font for modern, clean readability
-
-### 📱 **Fully Responsive Grid System**
-- **Mobile (< 640px)**: 2 columns
-- **Small Tablets (640px+)**: 3 columns  
-- **Tablets (768px+)**: 4 columns
-- **Desktop (1024px+)**: 5 columns
-- **Large Screens (1280px+)**: 6 columns
-- **Ultra-wide**: Optimized spacing and layout
-
-### ⚡ **Interactive Features**
-- **Real-time Search**: Instant filtering as you type
-- **Category Filtering**: Click navigation icons to filter by category
-- **Smooth Transitions**: Tiles fade in/out with staggered animations
-- **Keyboard Shortcuts**:
-  - `ESC` - Clear search and show all tiles
-  - `1-9` - Quick navigation to filter categories
-- **URL Hash Support**: Shareable links like `#favorites` or `#tools`
-- **Visual Feedback**: Hover effects, active states, and app counters
-
-### 🛠 **Technical Excellence**
-- **Zola Static Site Generator**: Fast, secure, and SEO-optimized
-- **Tailwind CSS**: Utility-first CSS framework for consistency
-- **CDN Integration**: Fast loading with cloud-delivered assets
-- **Production Ready**: Minified CSS and optimized assets
-- **Accessibility**: Proper ARIA labels and keyboard navigation
-- **Modern Browser Support**: Chrome, Firefox, Safari, Edge
-
-## 🚀 Quick Start
-
-### 1. Clone or Download Theme
+## Quick start
 
 ```bash
-# Clone into your Zola site's themes directory
-cd your-zola-site/themes
-git clone https://github.com/fastup-one/landing-grid-zola landing-grid
+git clone <your-repo-url> landing-grid
+cd landing-grid
 
-# Or download and extract
-curl -L https://github.com/fastup-one/landing-grid-zola/archive/main.zip -o landing-grid.zip
-unzip landing-grid.zip && mv landing-grid-zola-main landing-grid
+npm ci            # install the build/test toolchain
+npm run dev       # Tailwind watch + zola serve → http://localhost:1111
 ```
 
-### 2. Configure Your Site
+Production build:
 
-Update your `config.toml`:
+```bash
+npm run build     # compiles CSS, then `zola build` into ./public
+```
+
+## Configuration
+
+### Site — `config.toml`
 
 ```toml
-base_url = "https://yourdomain.com"
-title = "My Landing Dashboard"
-description = "Your personal dashboard for quick access to favorite tools and websites"
+base_url = "https://your-domain.example"
+title = "Modern Landing Grid"
+description = "Your personal dashboard"
 theme = "landing-grid"
+minify_html = true
 
 [extra]
-favicon = "favicon.ico"
+favicon = "favicon.svg"
 open_links_in_new_window = true
 
-# Navigation categories (customize icons and names)
+# Sidebar category. `tag` must match a tile tag; `icon` is one of the built-ins.
 [[extra.nav]]
 name = "favorites"
-tag = "favorite"
+tag  = "favorite"
 icon = "star"
-
-[[extra.nav]]
-name = "tools"
-tag = "tools" 
-icon = "wrench"
-
-[[extra.nav]]
-name = "social"
-tag = "social"
-icon = "users"
-
-[[extra.nav]]
-name = "work"
-tag = "work"
-icon = "briefcase"
-
-[[extra.nav]]
-name = "entertainment"
-tag = "entertainment"
-icon = "play"
 ```
 
-### 3. Add Your Tiles
+Built‑in icons: `home`, `grid` (aka `th`), `star`, `search`, `shopping-bag`,
+`music`, `play`. Add more in `themes/landing-grid/templates/partials/icons.html`.
 
-Create `data/links.toml` with your favorite sites:
+### Links — `data/links.toml`
 
 ```toml
 [[tiles]]
-name = "GitHub"
-url = "https://github.com"
-bg_color = "#24292E"
-txt_color = "#FFFFFF"
-tags = ["tools", "favorite", "work"]
-
-[[tiles]]
-name = "Gmail" 
-url = "https://gmail.com"
-bg_color = "#EA4335"
-txt_color = "#FFFFFF"
-tags = ["tools", "work"]
-
-[[tiles]]
-name = "YouTube"
-url = "https://youtube.com"
-bg_color = "#FF0000"
-txt_color = "#FFFFFF"
-tags = ["entertainment", "favorite"]
-
-[[tiles]]
-name = "Spotify"
-url = "https://spotify.com"
-bg_color = "#1DB954"
-txt_color = "#FFFFFF"
-tags = ["entertainment"]
-
-[[tiles]]
-name = "Twitter"
-url = "https://twitter.com"
-bg_color = "#1DA1F2"  
-txt_color = "#FFFFFF"
-tags = ["social"]
-
-[[tiles]]
-name = "LinkedIn"
-url = "https://linkedin.com"
-bg_color = "#0077B5"
-txt_color = "#FFFFFF"
-tags = ["social", "work"]
+name      = "Perplexity"          # label + accessible name (required)
+url       = "https://perplexity.ai"  # http(s) or root-relative (required)
+bg_color  = "#1debf2"             # optional, #RRGGBB
+txt_color = "#FFFFFF"             # optional, #RRGGBB
+tags      = ["favorite", "search"]   # optional category tokens
 ```
 
-### 4. Build & Serve
+Link data is checked by the `make links` gate (also run in CI and the
+pre‑commit hook): URLs must be `http(s)` or root‑relative and colors 6‑digit
+hex — an invalid tile fails that check.
 
-```bash
-# Development server
-zola serve
+## Customization
 
-# Production build
-zola build
-
-# Your site will be in the 'public/' directory
-```
-
-## ⚙️ Configuration Options
-
-### Navigation Categories
-
-Each navigation item supports:
-
-```toml
-[[extra.nav]]
-name = "category-name"    # Display name in tooltips
-tag = "filter-tag"       # Tag to filter tiles
-icon = "star"             # FontAwesome icon name (without 'fas fa-' prefix)
-```
-
-### 🎨 **Icon System**
-
-The theme uses **Font Awesome 6.5.0** solid icons for navigation. Simply specify the icon name without prefixes.
-
-#### **📚 Icon Reference:**
-- **Browse All Icons**: https://fontawesome.com/search?o=r&m=free&s=solid
-- **Icon Search**: https://fontawesome.com/icons
-
-#### **Popular Navigation Icons:**
-
-| Icon Name | Visual | Perfect For |
-|-----------|--------|-------------|
-| `star` | ⭐ | Favorites, bookmarks |
-| `heart` | ❤️ | Loved items, personal |
-| `home` | 🏠 | Dashboard, main |
-| `briefcase` | 💼 | Work, business tools |
-| `wrench` | 🔧 | Utilities, tools |
-| `users` | 👥 | Social, community |
-| `play` | ▶️ | Entertainment, media |
-| `music` | 🎵 | Music, audio apps |
-| `gamepad` | 🎮 | Games, gaming |
-| `shopping-bag` | 🛍️ | Shopping, e-commerce |
-| `code` | 💻 | Development, coding |
-| `chart-bar` | 📊 | Analytics, data |
-| `rocket` | 🚀 | Productivity, speed |
-| `shield-alt` | 🛡️ | Security, privacy |
-| `envelope` | ✉️ | Email, messages |
-| `camera` | 📷 | Photos, media |
-| `book` | 📚 | Reading, docs |
-| `cog` | ⚙️ | Settings, config |
-| `search` | 🔍 | Search, discovery |
-
-#### **How to Use:**
-1. Visit https://fontawesome.com/search?o=r&m=free&s=solid
-2. Search for your desired icon (e.g., "social", "work")
-3. Copy the icon name (e.g., "facebook" from "fa-facebook")
-4. Add to your config: `icon = "facebook"`
-
-#### **Example Custom Categories:**
-```toml
-[[extra.nav]]
-name = "development"
-tag = "dev"
-icon = "code"           # Development tools
-
-[[extra.nav]]
-name = "social media"
-tag = "social"
-icon = "users"          # Social platforms
-
-[[extra.nav]]
-name = "productivity"
-tag = "work"
-icon = "rocket"         # Work tools
-```
-
-### Tile Properties
-
-Each tile supports:
-
-```toml
-[[tiles]]
-name = "Site Name"           # Required - Display name
-url = "https://example.com"  # Required - Target URL  
-bg_color = "#FF6B6B"        # Optional - Hex background color
-txt_color = "#FFFFFF"       # Optional - Hex text color
-tags = ["tag1", "tag2"]     # Optional - Categories for filtering
-```
-
-### Global Settings
-
-```toml
-[extra]
-favicon = "favicon.ico"              # Site favicon
-open_links_in_new_window = true      # Open tiles in new tab/window
-```
-
-## 🎨 Customization
-
-### Color Themes
-
-The theme uses CSS custom properties for easy customization. Create a custom CSS file:
+Styling uses **Tailwind v4** (CSS‑first — there is no `tailwind.config.js`).
+Edit the design tokens in the `@theme` block of `src/input.css`:
 
 ```css
-:root {
-  /* Background gradient colors */
-  --gradient-start: #667eea;    /* Indigo */
-  --gradient-middle: #764ba2;   /* Purple */ 
-  --gradient-end: #f093fb;      /* Pink */
-  
-  /* Glass effects */
-  --glass-bg: rgba(255, 255, 255, 0.1);
-  --glass-border: rgba(255, 255, 255, 0.2);
-  --glass-dark: rgba(0, 0, 0, 0.2);
-}
-
-/* Custom gradient example */
-body {
-  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-middle), var(--gradient-end));
+@theme {
+  --color-brand-primary: #667eea;
+  --color-brand-secondary: #764ba2;
+  --font-inter: "Inter", sans-serif;
 }
 ```
 
-### Layout Customization
-
-Modify grid columns in `templates/index.html`:
-
-```html
-<!-- Default: 2-6 responsive columns -->
-<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
-
-<!-- Fixed 4 columns example -->
-<div class="grid grid-cols-4 gap-6">
-
-<!-- Large tiles example -->  
-<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-```
-
-## 🔧 Development
-
-### Prerequisites
-- **Zola** v0.17.0+ ([Install Zola](https://getzola.org/documentation/getting-started/installation/))
-- **Node.js** 16+ (for CSS building)
-- **Git** (for version control)
-
-### Development Setup
-
-```bash
-# Clone the theme
-git clone https://github.com/fastup-one/landing-grid-zola
-cd landing-grid-zola
-
-# Install dependencies (reproducible; requires the committed lockfile)
-npm ci
-
-# Enable the fast pre-commit gate (once per clone)
-git config core.hooksPath .githooks
-
-# Start development with CSS watching
-npm run dev
-```
-
-### Build & gate commands
-
-```bash
-npm ci                   # Reproducible install (package-lock.json)
-npm run dev              # Zola dev server + Tailwind watch (http://localhost:1111)
-npm run build            # Production build (compiled CSS + zola build)
-make ci                  # Full gate battery: build, a11y, tests, lint, coverage
-make help                # List every gate target
-```
-
-Styling is compiled with **Tailwind v4** (`@tailwindcss/cli`) from `src/input.css`
-into `themes/landing-grid/static/css/tailwind.css`, which is linked by the theme.
-There is no CDN dependency at runtime and no `tailwind.config.js` (v4 is CSS-first).
-
-### Project structure
+## Project structure
 
 ```
-landing-grid-zola/
+.
 ├── config.toml                 # Site config (base_url, nav, minify_html)
 ├── content/_index.md           # Home section
-├── data/links.toml             # Tile data (name / url / colors / tags) — validated at build
+├── data/links.toml             # Tile data (validated at build)
 ├── src/input.css               # Tailwind v4 source (@theme, @plugin, components)
-├── package.json                # Build + gate tooling
-├── Makefile                    # Single entrypoint for every gate (make ci)
-├── Dockerfile  ·  nginx/       # Hardened container build + server config
-├── scripts/                    # invariants.mjs, validate-links.mjs, coverage-matrix.mjs
+├── package.json                # Build + test toolchain
+├── Makefile                    # Single entrypoint for every check (make ci)
+├── Dockerfile · nginx/         # Hardened container build + server config
+├── scripts/                    # Build-time validators & CI helpers
 └── themes/landing-grid/
     ├── theme.toml
-    ├── templates/
-    │   ├── base.html           # Shell: head, nav, hero (block), search
-    │   ├── index.html          # Tile grid
-    │   ├── page.html · section.html · 404.html
-    │   └── partials/icons.html # Inline SVG icon macro
-    └── static/
-        ├── css/tailwind.css    # Compiled stylesheet (built; git-ignored)
-        ├── js/app.js           # Page behavior
-        └── fonts/              # Self-hosted Inter + JetBrains Mono
+    ├── templates/              # base, index, page, section, 404, partials/icons
+    └── static/                 # compiled css, js/app.js, self-hosted fonts
 ```
 
-## 🚀 Deployment
+The build tooling lives at the repository root; the reusable Zola theme is under
+`themes/landing-grid/`.
 
-### Static Hosting Platforms
+## Quality gates
 
-Deploy to any static hosting service:
+`make ci` runs the checks locally (see `make help`); each is also a CI job
+required to merge. The container image build and served‑page smoke test run in
+CI only — `make ci` lints the Dockerfile with `hadolint`.
 
-**Netlify**:
-```bash
-# Build command: zola build
-# Publish directory: public
-```
+| Area | Check | `make ci` | CI |
+| --- | --- | :---: | :---: |
+| Build | Tailwind v4 compile + `zola build`, `zola check` | ✓ | ✓ |
+| Markup | `html-validate` | ✓ | ✓ |
+| Accessibility | `pa11y` (WCAG 2 AA) + axe in Playwright | ✓ | ✓ |
+| Behavior | Playwright end‑to‑end tests | ✓ | ✓ |
+| Performance / SEO | Lighthouse budgets | ✓ | ✓ |
+| Data | `data/links.toml` validator | ✓ | ✓ |
+| Container | `hadolint` (+ image build & smoke test in CI) | lint only | ✓ |
+| Supply chain | `actionlint` (runs `shellcheck` on workflows) + `gitleaks` | ✓ | ✓ |
+| Regression | per‑item invariants + a coverage check | ✓ | ✓ |
 
-**Vercel**:
-```bash  
-# Build command: zola build
-# Output directory: public
-```
+Lighthouse budgets enforced in CI: performance ≥ 90, accessibility ≥ 95,
+best‑practices ≥ 90, SEO = 100.
 
-**GitHub Pages**:
-```yaml
-# .github/workflows/deploy.yml
-name: Deploy to GitHub Pages
-
-on:
-  push:
-    branches: [ main ]
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        
-      - name: Setup Zola
-        uses: taiki-e/install-action@zola
-        
-      - name: Build site
-        run: zola build
-        
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
-```
-
-**Cloudflare Pages**:
-- Build command: `zola build`
-- Build output directory: `public`
-
-## 🎯 Use Cases
-
-### 📊 **Personal Dashboard**
-Perfect for creating your daily-use homepage with:
-- Frequently visited websites
-- Work tools and applications  
-- Social media shortcuts
-- Entertainment platforms
-
-### 🏢 **Team/Company Resources**
-Great for organizational tool directories:
-- Internal applications and tools
-- Documentation and wikis
-- Project management systems
-- Communication platforms
-
-### 🎨 **Portfolio Showcase**
-Ideal for creative professionals:
-- Project galleries and demos
-- Social media profiles
-- Client resources
-- Creative tools and inspiration
-
-### 📚 **Resource Collections**
-Perfect for curated link collections:
-- Learning resources and tutorials
-- Industry tools and software
-- Reference materials
-- Community and forums
-
-## 📊 **Migration Comparison**
-
-| Feature | Hugo Slate | Landing Grid (Zola) |
-|---------|------------|---------------------|
-| **Static Site Generator** | Hugo | Zola |
-| **CSS Framework** | Custom SCSS | Tailwind CSS |
-| **Design Style** | Basic/Minimal | Modern Glassmorphism |
-| **Navigation** | Basic list | Professional sidebar |
-| **Animations** | Limited | Smooth transitions |
-| **Responsive Design** | Basic | Fully optimized |
-| **Search** | Basic | Real-time with transitions |
-| **Keyboard Shortcuts** | None | ESC, Number keys |
-| **URL Hash Support** | Basic | Full support |
-| **Build System** | Hugo pipes | Tailwind + Zola |
-| **Documentation** | Minimal | Comprehensive |
-
-## 🤝 Contributing
-
-We welcome contributions! Here's how you can help:
-
-1. **Fork** the repository
-2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
-3. **Commit** your changes (`git commit -m 'Add amazing feature'`)  
-4. **Push** to the branch (`git push origin feature/amazing-feature`)
-5. **Open** a Pull Request
-
-### Types of Contributions
-- 🐛 **Bug fixes** - Fix issues or improve functionality
-- ✨ **New features** - Add new capabilities or options
-- 📝 **Documentation** - Improve guides, examples, or README
-- 🎨 **Design** - Enhance UI/UX or add themes
-- ⚡ **Performance** - Optimize loading or rendering
-
-## 📄 License
-
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
-
-### Hugo Slate Attribution
-Originally inspired by and migrated from the Hugo Slate theme. This Zola version is a complete rewrite with significant enhancements and modern features.
-
-## 🙏 Acknowledgments
-
-- **Hugo Slate Theme** - Original inspiration and concept
-- **[Zola](https://getzola.org/)** - Fast and flexible static site generator  
-- **[Tailwind CSS](https://tailwindcss.com/)** - Utility-first CSS framework
-- **[Font Awesome](https://fontawesome.com/)** - Beautiful icons
-- **[Inter Font](https://rsms.me/inter/)** - Modern typography
-- **[Glassmorphism](https://glassmorphism.com/)** - Design inspiration
-
-## 📞 Support & Community
-
-### Get Help
-- 📖 **[Documentation](https://github.com/fastup-one/landing-grid-zola/wiki)** - Comprehensive guides
-- 🐛 **[Issue Tracker](https://github.com/fastup-one/landing-grid-zola/issues)** - Bug reports and feature requests  
-- 💬 **[Discussions](https://github.com/fastup-one/landing-grid-zola/discussions)** - Community support
-
-### Stay Updated
-- ⭐ **Star this repo** to get notified of updates
-- 👀 **Watch releases** for new versions
-- 🐦 **Follow on Twitter** [@fastup-one] for announcements
-
-## 🐳 Docker Deployment
-
-The Landing Grid theme provides simple Docker deployment using pre-built static files and nginx.
-
-### 🚀 **Quick Deployment**
-
-Deploy in just 2 steps:
+Enable the local pre‑commit gate once per clone:
 
 ```bash
-# 1. Build the static site locally
-zola build
-
-# 2. Deploy with Docker Compose
-docker-compose up -d
+git config core.hooksPath .githooks
 ```
 
-The site will be available at **http://localhost:8090**
+## Deployment
 
-### 📁 **How It Works**
+### GitHub Pages
 
-The deployment approach is simple and efficient:
+Pushing to `main` runs `.github/workflows/main.yml`, which builds the site and
+publishes it to the `gh-pages` branch. In **Settings → Pages**, set the source to
+**Deploy from a branch → `gh-pages`**. For a custom domain, edit `static/CNAME`.
 
-1. **Build Locally**: Use `zola build` to generate static files in `public/`
-2. **Mount Volume**: Docker mounts `./public` to nginx web root
-3. **Serve Static**: Nginx serves the pre-built files with optimal performance
+To require the checks before merging, protect `main` and mark the
+**All gates green** status check as required — see
+[`docs/branch-protection.md`](docs/branch-protection.md).
 
-### ⚙️ **Docker Configuration**
-
-The `docker-compose.yaml` is minimal and focused:
-
-```yaml
-version: '3.8'
-
-services:
-  nginx:
-    image: nginx:alpine
-    container_name: landing-grid-nginx
-    ports:
-      - "8090:80"  # Access at localhost:8090
-    volumes:
-      - ./public:/usr/share/nginx/html:ro  # Mount static files
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 5s
-```
-
-### 🔧 **Development Workflow**
+### Docker
 
 ```bash
-# Development with local Zola server
-zola serve --port 8989  # http://localhost:8989
-
-# Update content, then rebuild and deploy
-zola build
-docker-compose restart
+docker compose up --build     # serves the hardened nginx image on 127.0.0.1:8090
 ```
 
-### 📊 **Production Benefits**
+The image is multi‑stage (build → static nginx), runs read‑only with dropped
+capabilities, and sets a CSP and security headers.
 
-This approach provides several advantages:
+## Tech stack
 
-- **🚀 Fast Deployment**: No build time in Docker, just static file serving
-- **🔧 Simple**: Single nginx container, no complex build stages
-- **💾 Efficient**: Small image size, only static files
-- **🔄 Easy Updates**: Rebuild locally, restart container
-- **⚡ Performance**: Direct nginx serving with optimal caching
-- **🛡️ Security**: Read-only volume mount, minimal attack surface
+Zola · Tailwind CSS v4 · vanilla JavaScript · nginx · Docker.
 
-### 🚀 **Deployment Commands**
+## License
 
-```bash
-# Start the service
-docker-compose up -d
-
-# Stop the service
-docker-compose down
-
-# View logs
-docker-compose logs -f
-
-# Restart after content changes
-zola build && docker-compose restart
-
-# Check container status
-docker-compose ps
-```
-
-### 🌐 **Custom Port**
-
-To change the port, edit `docker-compose.yaml`:
-
-```yaml
-ports:
-  - "80:80"      # Standard HTTP
-  - "8080:80"    # Alternative port
-  - "443:80"     # Behind reverse proxy
-```
-
-### 🔒 **Production Considerations**
-
-For production deployment:
-
-- Use a reverse proxy (Traefik, nginx, Cloudflare)
-- Configure SSL/TLS certificates
-- Set up automated builds and deployments
-- Monitor container health and logs
-- Backup your content and configuration
-
----
-
-<div align="center">
-
-**Made with ❤️ for the Zola community**
-
-*Migrated from Hugo Slate • Enhanced for Modern Web*
-
-[⭐ Star on GitHub](https://github.com/fastup-one/landing-grid-zola) • [📖 Documentation](https://github.com/fastup-one/landing-grid-zola/wiki) • [🐛 Report Issues](https://github.com/fastup-one/landing-grid-zola/issues)
-
-</div>
+MIT © Anibal Aguila
